@@ -1,1 +1,138 @@
 ("print hello students") 
+print("fallout)
+import random
+
+class Combat:
+    def __init__(self, characters, enemies):
+        self.characters = characters
+        self.enemies = enemies
+
+    def battle_turn(self):
+        # Determine turn order based on agility or speed
+        # Sort characters and enemies by agility
+        all_combatants = self.characters + self.enemies
+        all_combatants.sort(key=lambda x: x.agility, reverse=True)
+
+        for combatant in all_combatants:
+            if isinstance(combatant, Character):  # Player's turn
+                self.character_turn(combatant)
+            else:  # Enemy's turn
+                self.enemy_turn(combatant)
+
+    def character_turn(self, character):
+        action = input(f"{character.name}'s turn! Choose action (attack/magic/item): ")
+        if action == 'attack':
+            self.attack_action(character)
+        elif action == 'magic':
+            self.magic_action(character)
+        elif action == 'item':
+            self.item_action(character)
+
+    def enemy_turn(self, enemy):
+        # Example: enemy just attacks
+        target = random.choice(self.characters)  # Random target
+        damage = enemy.attack - target.defense
+        if damage > 0:
+            target.take_damage(damage)
+            print(f"{enemy.name} attacks {target.name} for {damage} damage!")
+        else:
+            print(f"{enemy.name}'s attack does no damage!")
+
+    def attack_action(self, character):
+        target = random.choice(self.enemies)
+        damage = character.attack - target.defense
+        if damage > 0:
+            target.take_damage(damage)
+            print(f"{character.name} attacks {target.name} for {damage} damage!")
+        else:
+            print(f"{character.name}'s attack does no damage!")
+
+    def magic_action(self, character):
+        if character.mp >= 5:  # Example: 5 MP for a basic spell
+            character.mp -= 5
+            print(f"{character.name} casts a spell!")
+            target = random.choice(self.enemies)
+            damage = character.magic - target.defense
+            if damage > 0:
+                target.take_damage(damage)
+                print(f"{target.name} takes {damage} magic damage!")
+            else:
+                print(f"The spell has no effect on {target.name}!")
+        else:
+            print(f"{character.name} doesn't have enough MP!")
+
+    def item_action(self, character):
+        print(f"{character.name} uses an item!")
+        # Implement item logic (e.g., healing potions)
+class Character:
+    def __init__(self, name, hp, mp, attack, defense, magic, agility, level=1, xp=0):
+        self.name = name
+        self.hp = hp
+        self.mp = mp
+        self.attack = attack
+        self.defense = defense
+        self.magic = magic
+        self.agility = agility
+        self.level = level
+        self.xp = xp
+
+    def gain_xp(self, amount):
+        self.xp += amount
+        print(f"{self.name} gains {amount} XP!")
+        if self.xp >= 100:  # Example: 100 XP to level up
+            self.level_up()
+
+    def level_up(self):
+        self.level += 1
+        self.xp = 0  # Reset XP after level-up
+        self.hp = self.max_hp()
+        self.attack += 5
+        self.defense += 3
+        self.magic += 2
+        self.agility += 1
+        print(f"{self.name} leveled up to level {self.level}!")
+
+    def max_hp(self):
+        return self.level * 100  # Example formula for max HP
+class Magic:
+    def __init__(self, name, cost, damage):
+        self.name = name
+        self.cost = cost
+        self.damage = damage
+
+class Character:
+    def __init__(self, name, hp, mp, attack, defense, magic, agility, level=1):
+        self.name = name
+        self.hp = hp
+        self.mp = mp
+        self.attack = attack
+        self.defense = defense
+        self.magic = magic
+        self.agility = agility
+        self.level = level
+        self.spells = []
+
+    def learn_spell(self, spell):
+        self.spells.append(spell)
+
+    def cast_spell(self, spell, target):
+        if self.mp >= spell.cost:
+            self.mp -= spell.cost
+            print(f"{self.name} casts {spell.name} on {target.name}!")
+            damage = spell.damage - target.defense
+            target.take_damage(damage)
+            print(f"{target.name} takes {damage} damage!")
+        else:
+            print(f"{self.name} doesn't have enough MP!")
+class Quest:
+    def __init__(self, name, description, reward_xp, reward_items):
+        self.name = name
+        self.description = description
+        self.reward_xp = reward_xp
+        self.reward_items = reward_items
+        self.completed = False
+
+    def complete(self):
+        self.completed = True
+        print(f"Quest '{self.name}' completed! You gain {self.reward_xp} XP!")
+        return self.reward_xp, self.reward_items
